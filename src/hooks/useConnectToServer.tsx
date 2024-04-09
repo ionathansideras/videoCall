@@ -1,0 +1,22 @@
+import { useEffect } from "react";
+import { ConnectToServerProps } from "../types/types";
+
+export default function useConnectToServer({ setPc }: ConnectToServerProps) {
+    useEffect(() => {
+        // STUN server configuration
+        const servers = {
+            iceServers: [
+                {
+                    urls: [
+                        "stun:stun1.l.google.com:19302",
+                        "stun:stun2.l.google.com:19302",
+                    ],
+                },
+            ],
+            iceCandidatePoolSize: 10, // Number of ICE candidates to gather before sending to the other peer
+        };
+
+        // On component mount, initialize the peer connection
+        setPc(new RTCPeerConnection(servers));
+    }, [setPc]);
+}
