@@ -55,10 +55,10 @@ function App() {
             event.streams[0].getTracks().forEach((track) => {
                 remoteStream.addTrack(track);
             });
-            videoFriend.current.srcObject = remoteStream;
         };
 
         videoMe.current.srcObject = localStream;
+        videoFriend.current.srcObject = remoteStream;
     };
 
     const handleStartCall = async () => {
