@@ -17,13 +17,16 @@ export default function JoinCall({
     setJoinCode,
     videoMe,
     videoFriend,
+    setOpenPopUp,
 }: JoinCallProps) {
     // Function to join a call
     const handleJoinCall = async () => {
         if (!pc) return;
 
+        if (!joinCode) return;
+        setOpenPopUp(false);
+
         const callId = joinCode;
-        console.log(callId);
         const callDocRef = doc(db, "calls", callId);
         const answerCandidatesCollectionRef = collection(
             callDocRef,
@@ -83,16 +86,17 @@ export default function JoinCall({
         }
     };
     return (
-        <>
-            <h3>join a call</h3>
+        <div className="join">
+            <h2>Join a call</h2>
             <input
                 type="text"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value)}
+                placeholder="Enter the call ID here"
             />
             <button ref={joinCall} onClick={handleJoinCall}>
-                join call
+                Join
             </button>
-        </>
+        </div>
     );
 }

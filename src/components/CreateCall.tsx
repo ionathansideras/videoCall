@@ -15,10 +15,13 @@ export default function CreateCall({
     setJoinCode,
     videoMe,
     videoFriend,
+    setOpenToast,
+    setOpenPopUp,
 }: CreateCallProps) {
     // Function to start a call
     const handleStartCall = async () => {
         if (!pc) return;
+        setOpenPopUp(false);
 
         // Create a new document in the 'calls' collection
         const callDocRef = doc(collection(db, "calls"));
@@ -74,19 +77,20 @@ export default function CreateCall({
                 }
             });
         });
+        setOpenToast(true);
     };
 
     return (
-        <>
-            <h2>create a new call</h2>
+        <div className="create">
+            <h2>Create a new call</h2>
             <button
                 ref={
                     createCall as React.LegacyRef<HTMLButtonElement> | undefined
                 }
                 onClick={handleStartCall}
             >
-                create call
+                Create
             </button>
-        </>
+        </div>
     );
 }
