@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
     collection,
     doc,
@@ -12,6 +12,10 @@ import { db } from "./firebaseConfig";
 
 function App() {
     const [joinCode, setJoinCode] = useState("");
+    const [pc, setPc] = useState(null);
+    const [localStream, setLocalStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(null);
+
     const servers = {
         iceServers: [
             {
@@ -31,51 +35,58 @@ function App() {
     const hangupCall = useRef(null);
     const callInput = useRef(null);
 
-    let pc = new RTCPeerConnection(servers);
-    let localStream = null;
-    let remoteStream = null;
+    useEffect(() => {
+        setPc(new RTCPeerConnection(servers));
+    }, []);
 
     const handleStartCamera = async () => {
-        localStream = await navigator.mediaDevices.getUserMedia({
+        const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true,
         });
-        remoteStream = new MediaStream();
+        setLocalStream(stream);
+
+        const remote = new MediaStream();
+        setRemoteStream(remote);
 
         // Mute the microphone
-        localStream
-            .getAudioTracks()
-            .forEach((track) => (track.enabled = false));
+        stream.getAudioTracks().forEach((track) => (track.enabled = false));
 
-        localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream);
+        stream.getTracks().forEach((track) => {
+            pc.addTrack(track, stream);
         });
 
         pc.ontrack = (event) => {
             event.streams[0].getTracks().forEach((track) => {
-                remoteStream.addTrack(track);
+                remote.addTrack(track);
             });
         };
 
-        videoFriend.current.srcObject = remoteStream;
-        videoMe.current.srcObject = localStream;
+        videoFriend.current.srcObject = remote;
+        videoMe.current.srcObject = stream;
     };
 
     const handleStartCall = async () => {
+        if (!pc) return;
+
         // Create a new document in the 'calls' collection
-        const callDoc = firestore.collection("calls").doc();
-        // Create references for the 'offerCandidates' and 'answerCandidates' subcollections
-        const offerCandidatesCollection = callDoc.collection("offerCandidates");
-        const answerCandidatesCollection =
-            callDoc.collection("answerCandidates");
+        const callDocRef = doc(collection(db, "calls"));
+        const offerCandidatesCollectionRef = collection(
+            callDocRef,
+            "offerCandidates"
+        );
+        const answerCandidatesCollectionRef = collection(
+            callDocRef,
+            "answerCandidates"
+        );
 
         // Store the newly created call document's ID in an input field for later use
-        callInput.current.value = callDoc.id;
+        callInput.current.value = callDocRef.id;
 
         // ICE candidates event handler for the local (offerer) peer
         pc.onicecandidate = (event) => {
             event.candidate &&
-                offerCandidatesCollection.add(event.candidate.toJSON());
+                addDoc(offerCandidatesCollectionRef, event.candidate.toJSON());
         };
 
         // Create an SDP offer
@@ -88,9 +99,9 @@ function App() {
         };
 
         // Save the offer in the call document
-        await callDoc.set({ offer });
+        await setDoc(callDocRef, { offer });
 
-        callDoc.onSnapshot((snapshot) => {
+        onSnapshot(callDocRef, (snapshot) => {
             const data = snapshot.data();
             if (!pc.currentRemoteDescription && data?.answer) {
                 const answerDescription = new RTCSessionDescription(
@@ -101,7 +112,7 @@ function App() {
         });
 
         // Listen for remote ICE candidates
-        answerCandidatesCollection.onSnapshot((snapshot) => {
+        onSnapshot(answerCandidatesCollectionRef, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     const candidate = new RTCIceCandidate(change.doc.data());
@@ -112,44 +123,55 @@ function App() {
     };
 
     const handleJoinCall = async () => {
+        if (!pc) return;
+
         const callId = callInput.current.value;
-        const callDoc = firestore.collection("calls").doc(callId);
-        const answerCandidatesCollection =
-            callDoc.collection("answerCandidates");
+        const callDocRef = doc(db, "calls", callId);
+        const answerCandidatesCollectionRef = collection(
+            callDocRef,
+            "answerCandidates"
+        );
 
         pc.onicecandidate = async (event) => {
             event.candidate &&
-                answerCandidatesCollection.add(event.candidate.toJSON());
+                addDoc(answerCandidatesCollectionRef, event.candidate.toJSON());
         };
 
         // Fetching document data
-        const callData = (await callDoc.get()).data();
+        const callDocSnap = await getDoc(callDocRef);
+        if (callDocSnap.exists()) {
+            const callData = callDocSnap.data();
 
-        const offerDescription = callData.offer;
-        await pc.setRemoteDescription(
-            new RTCSessionDescription(offerDescription)
-        );
+            const offerDescription = callData.offer;
+            await pc.setRemoteDescription(
+                new RTCSessionDescription(offerDescription)
+            );
 
-        const answerDescription = await pc.createAnswer();
-        await pc.setLocalDescription(answerDescription);
+            const answerDescription = await pc.createAnswer();
+            await pc.setLocalDescription(answerDescription);
 
-        const answer = {
-            type: answerDescription.type,
-            sdp: answerDescription.sdp,
-        };
+            const answer = {
+                type: answerDescription.type,
+                sdp: answerDescription.sdp,
+            };
 
-        await callDoc.update({ answer });
+            await updateDoc(callDocRef, { answer });
 
-        offerCandidates.onSnapshot((snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    let data = change.doc.data();
-                    pc.addIceCandidate(new RTCIceCandidate(data));
+            onSnapshot(
+                collection(callDocRef, "offerCandidates"),
+                (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const data = change.doc.data();
+                            pc.addIceCandidate(new RTCIceCandidate(data));
+                        }
+                    });
                 }
-            });
-        });
+            );
+        } else {
+            console.log("No such document!");
+        }
     };
-
     return (
         <main>
             <div className="mirror-video-container">
