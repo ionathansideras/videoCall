@@ -3,10 +3,10 @@ import {
     collection,
     doc,
     setDoc,
-    onSnapshot,
     getDoc,
     addDoc,
     updateDoc,
+    onSnapshot,
 } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
@@ -55,34 +55,27 @@ function App() {
             event.streams[0].getTracks().forEach((track) => {
                 remoteStream.addTrack(track);
             });
-            videoFriend.current.srcObject = remoteStream;
         };
 
+        videoFriend.current.srcObject = remoteStream;
         videoMe.current.srcObject = localStream;
     };
 
     const handleStartCall = async () => {
         // Create a new document in the 'calls' collection
-        const callDocRef = doc(collection(db, "calls"));
+        const callDoc = firestore.collection("calls").doc();
         // Create references for the 'offerCandidates' and 'answerCandidates' subcollections
-        const offerCandidatesCollection = collection(
-            callDocRef,
-            "offerCandidates"
-        );
-        const answerCandidatesCollection = collection(
-            callDocRef,
-            "answerCandidates"
-        );
+        const offerCandidatesCollection = callDoc.collection("offerCandidates");
+        const answerCandidatesCollection =
+            callDoc.collection("answerCandidates");
 
         // Store the newly created call document's ID in an input field for later use
-        callInput.current.value = callDocRef.id;
+        callInput.current.value = callDoc.id;
 
         // ICE candidates event handler for the local (offerer) peer
         pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                // Add each new ICE candidate to the 'offerCandidates' collection
-                addDoc(offerCandidatesCollection, event.candidate.toJSON());
-            }
+            event.candidate &&
+                offerCandidatesCollection.add(event.candidate.toJSON());
         };
 
         // Create an SDP offer
@@ -95,10 +88,9 @@ function App() {
         };
 
         // Save the offer in the call document
-        await setDoc(callDocRef, { offer });
+        await callDoc.set({ offer });
 
-        // Listen for changes to the call document, specifically looking for an answer
-        onSnapshot(callDocRef, (snapshot) => {
+        callDoc.onSnapshot((snapshot) => {
             const data = snapshot.data();
             if (!pc.currentRemoteDescription && data?.answer) {
                 const answerDescription = new RTCSessionDescription(
@@ -108,8 +100,8 @@ function App() {
             }
         });
 
-        // Listen for ICE candidates added to the 'answerCandidates' collection
-        onSnapshot(answerCandidatesCollection, (snapshot) => {
+        // Listen for remote ICE candidates
+        answerCandidatesCollection.onSnapshot((snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     const candidate = new RTCIceCandidate(change.doc.data());
@@ -121,70 +113,57 @@ function App() {
 
     const handleJoinCall = async () => {
         const callId = callInput.current.value;
-
-        // Correctly reference the document using the Firestore modular SDK
-        const callDocRef = doc(db, "calls", callId);
-
-        // To get a reference to a subcollection of offerCandidates
-        const offerCandidatesCollection = collection(
-            db,
-            `calls/${callId}/offerCandidates`
-        );
+        const callDoc = firestore.collection("calls").doc(callId);
+        const answerCandidatesCollection =
+            callDoc.collection("answerCandidates");
 
         pc.onicecandidate = async (event) => {
-            if (event.candidate) {
-                await addDoc(
-                    offerCandidatesCollection,
-                    event.candidate.toJSON()
-                );
-            }
+            event.candidate &&
+                answerCandidatesCollection.add(event.candidate.toJSON());
         };
 
         // Fetching document data
-        const callDocSnap = await getDoc(callDocRef);
-        if (callDocSnap.exists()) {
-            const callData = callDocSnap.data();
-            const offerDescription = callData.offer;
+        const callData = (await callDoc.get()).data();
 
-            await pc.setRemoteDescription(
-                new RTCSessionDescription(offerDescription)
-            );
+        const offerDescription = callData.offer;
+        await pc.setRemoteDescription(
+            new RTCSessionDescription(offerDescription)
+        );
 
-            const answerDescription = await pc.createAnswer();
-            await pc.setLocalDescription(answerDescription);
+        const answerDescription = await pc.createAnswer();
+        await pc.setLocalDescription(answerDescription);
 
-            const answer = {
-                type: answerDescription.type,
-                sdp: answerDescription.sdp,
-            };
+        const answer = {
+            type: answerDescription.type,
+            sdp: answerDescription.sdp,
+        };
 
-            // Update the document with the answer
-            await updateDoc(callDocRef, { answer });
+        await callDoc.update({ answer });
 
-            // Listening to changes in the offerCandidates collection
-            onSnapshot(offerCandidatesCollection, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        const candidate = new RTCIceCandidate(
-                            change.doc.data()
-                        );
-                        pc.addIceCandidate(candidate);
-                    }
-                });
+        offerCandidates.onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    let data = change.doc.data();
+                    pc.addIceCandidate(new RTCIceCandidate(data));
+                }
             });
-        } else {
-            console.log("No such document!");
-        }
+        });
     };
 
     return (
         <main>
             <div className="mirror-video-container">
-                <video ref={videoMe} className="mirror-video" autoPlay></video>
+                <video
+                    ref={videoMe}
+                    className="mirror-video"
+                    autoPlay
+                    playsInline
+                ></video>
                 <video
                     ref={videoFriend}
                     className="mirror-video"
                     autoPlay
+                    playsInline
                 ></video>
             </div>
             <button ref={webcamStart} onClick={handleStartCamera}>
