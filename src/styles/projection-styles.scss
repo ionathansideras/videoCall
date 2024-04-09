@@ -29,10 +29,12 @@
         flex-direction: column;
         #mirror-video-me {
             width: 100%;
+            height: 100vh;
         }
 
         #mirror-video-friend {
             width: 0%;
+            height: 0vh;
         }
 
         #mirror-video-friend.active {
