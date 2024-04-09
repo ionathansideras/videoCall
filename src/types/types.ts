@@ -38,7 +38,7 @@ type ProjectionProps = {
     videoFriend: React.RefObject<HTMLVideoElement>;
 };
 
-type ConectionControlsProps = {
+type ConnectionControlsProps = {
     localStream: MediaStream | null;
 };
 export type {
@@ -46,6 +46,6 @@ export type {
     JoinCallProps,
     ConnectToServerProps,
     ProjectionProps,
-    ConectionControlsProps,
+    ConnectionControlsProps,
     StartCameraProps,
 };

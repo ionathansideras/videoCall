@@ -6,7 +6,7 @@ import CreateCall from "./components/CreateCall";
 import JoinCall from "./components/JoinCall";
 // Importing the useConnectToServer hook
 import useConnectToServer from "./hooks/useConnectToServer";
-import ConectionControls from "./components/ConectionControls";
+import ConnectionControls from "./components/ConnectionControls";
 import { startCamera } from "./helpers/startCamera";
 import Snackbar from "@mui/material/Snackbar";
 
@@ -56,7 +56,7 @@ function App() {
     return (
         <main>
             <Projection videoMe={videoMe} videoFriend={videoFriend} />
-            <ConectionControls localStream={localStream} />
+            <ConnectionControls localStream={localStream} />
             <Snackbar
                 open={openToast}
                 autoHideDuration={7000}

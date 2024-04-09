@@ -1,0 +1,20 @@
+.connection-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    height: 50px;
+    border-radius: 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+    z-index: 1000;
+
+    img {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+}
