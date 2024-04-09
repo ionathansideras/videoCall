@@ -1,0 +1,27 @@
+.projection {
+    display: flex;
+    justify-content: center;
+    background-color: #36393e;
+
+    .mirror-video {
+        transform: scaleX(-1);
+        height: 100vh;
+        transition: width 0.5s;
+    }
+
+    #mirror-video-me {
+        width: 100%;
+    }
+
+    #mirror-video-friend {
+        width: 0%;
+    }
+
+    #mirror-video-friend.active {
+        width: 50%;
+    }
+
+    #mirror-video-me.active {
+        width: 50%;
+    }
+}

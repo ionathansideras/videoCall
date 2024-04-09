@@ -15,6 +15,8 @@ export default function JoinCall({
     pc,
     joinCode,
     setJoinCode,
+    videoMe,
+    videoFriend,
 }: JoinCallProps) {
     // Function to join a call
     const handleJoinCall = async () => {
@@ -61,6 +63,17 @@ export default function JoinCall({
                         if (change.type === "added") {
                             const data = change.doc.data();
                             pc.addIceCandidate(new RTCIceCandidate(data));
+                            if (
+                                !videoMe.current?.classList.contains(
+                                    "active"
+                                ) &&
+                                !videoFriend.current?.classList.contains(
+                                    "active"
+                                )
+                            ) {
+                                videoMe.current?.classList.add("active");
+                                videoFriend.current?.classList.add("active");
+                            }
                         }
                     });
                 }

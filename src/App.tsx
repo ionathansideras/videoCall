@@ -12,7 +12,7 @@ function App() {
     // State variables for join code, peer connection, local and remote streams
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
     const [joinCode, setJoinCode] = useState("");
-
+    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
     // References to various HTML elements
     const videoMe = useRef(null);
     const videoFriend = useRef(null);
@@ -26,23 +26,32 @@ function App() {
     // Render the UI
     return (
         <main>
-            <Projection videoMe={videoMe} videoFriend={videoFriend} />
+            <Projection
+                videoMe={videoMe}
+                videoFriend={videoFriend}
+                localStream={localStream}
+            />
             <OpenCamera
                 videoMe={videoMe}
                 videoFriend={videoFriend}
                 webcamStart={webcamStart}
                 pc={pc}
+                setLocalStream={setLocalStream}
             />
             <CreateCall
                 createCall={createCall}
                 pc={pc}
                 setJoinCode={setJoinCode}
+                videoMe={videoMe}
+                videoFriend={videoFriend}
             />
             <JoinCall
                 joinCall={joinCall}
                 setJoinCode={setJoinCode}
                 pc={pc}
                 joinCode={joinCode}
+                videoMe={videoMe}
+                videoFriend={videoFriend}
             />
         </main>
     );

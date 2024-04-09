@@ -5,6 +5,7 @@ export default function OpenCamera({
     videoMe,
     videoFriend,
     pc,
+    setLocalStream,
 }: OpenCameraProps) {
     // Function to start the camera and set up the local and remote streams
     const handleStartCamera = async () => {
@@ -16,6 +17,9 @@ export default function OpenCamera({
 
         // Create a new MediaStream for the remote video
         const remote = new MediaStream();
+
+        // Set the local stream in the state
+        setLocalStream(stream);
 
         // Add each track from the local stream to the peer connection
         stream.getTracks().forEach((track) => {

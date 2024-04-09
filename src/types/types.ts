@@ -2,6 +2,8 @@ type CreateCallProps = {
     createCall: React.RefObject<HTMLElement>; // adjust this based on the actual element type
     pc: RTCPeerConnection | null;
     setJoinCode: (value: string) => void;
+    videoMe: React.RefObject<HTMLVideoElement>;
+    videoFriend: React.RefObject<HTMLVideoElement>;
 };
 
 type JoinCallProps = {
@@ -9,6 +11,8 @@ type JoinCallProps = {
     pc: RTCPeerConnection | null;
     joinCode: string;
     setJoinCode: (value: string) => void;
+    videoMe: React.RefObject<HTMLVideoElement>;
+    videoFriend: React.RefObject<HTMLVideoElement>;
 };
 
 type ConnectToServerProps = {
@@ -20,11 +24,13 @@ type OpenCameraProps = {
     videoFriend: React.RefObject<HTMLVideoElement>;
     webcamStart: React.RefObject<HTMLElement>;
     pc: RTCPeerConnection | null; // allow pc to be null
+    setLocalStream: (value: MediaStream) => void;
 };
 
 type ProjectionProps = {
     videoMe: React.RefObject<HTMLVideoElement>;
     videoFriend: React.RefObject<HTMLVideoElement>;
+    setLocalStream: (value: MediaStream) => void;
 };
 
 export type {

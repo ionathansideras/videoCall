@@ -1,13 +1,5 @@
-.mirror-video {
-    transform: scaleX(-1);
-    width: 50%;
-}
+@import "projection-styles.scss";
 
 body {
     margin: 0;
-}
-
-.projection {
-    display: flex;
-    justify-content: center;
 }

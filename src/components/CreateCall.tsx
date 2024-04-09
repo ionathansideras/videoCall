@@ -13,6 +13,8 @@ export default function CreateCall({
     createCall,
     pc,
     setJoinCode,
+    videoMe,
+    videoFriend,
 }: CreateCallProps) {
     // Function to start a call
     const handleStartCall = async () => {
@@ -57,6 +59,8 @@ export default function CreateCall({
                 const answerDescription = new RTCSessionDescription(
                     data.answer
                 );
+                videoMe.current?.classList.add("active");
+                videoFriend.current?.classList.add("active");
                 pc.setRemoteDescription(answerDescription);
             }
         });
