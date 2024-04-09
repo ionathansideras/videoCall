@@ -29,7 +29,7 @@ function App() {
     const createCall = useRef(null);
     const joinCall = useRef(null);
     const hangupCall = useRef(null);
-    const callInut = useRef(null);
+    const callInput = useRef(null);
 
     let pc = new RTCPeerConnection(servers);
     let localStream = null;
@@ -41,6 +41,11 @@ function App() {
             audio: true,
         });
         remoteStream = new MediaStream();
+
+        // Mute the microphone
+        localStream
+            .getAudioTracks()
+            .forEach((track) => (track.enabled = false));
 
         localStream.getTracks().forEach((track) => {
             pc.addTrack(track, localStream);
@@ -70,7 +75,7 @@ function App() {
         );
 
         // Store the newly created call document's ID in an input field for later use
-        callInut.current.value = callDocRef.id;
+        callInput.current.value = callDocRef.id;
 
         // ICE candidates event handler for the local (offerer) peer
         pc.onicecandidate = (event) => {
@@ -115,7 +120,7 @@ function App() {
     };
 
     const handleJoinCall = async () => {
-        const callId = callInut.current.value;
+        const callId = callInput.current.value;
 
         // Correctly reference the document using the Firestore modular SDK
         const callDocRef = doc(db, "calls", callId);
@@ -191,7 +196,7 @@ function App() {
             </button>
             <h3>join a call</h3>
             <input
-                ref={callInut}
+                ref={callInput}
                 type="text"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value)}
