@@ -49,9 +49,6 @@ function App() {
         const remote = new MediaStream();
         setRemoteStream(remote);
 
-        // Mute the microphone
-        stream.getAudioTracks().forEach((track) => (track.enabled = false));
-
         stream.getTracks().forEach((track) => {
             pc.addTrack(track, stream);
         });
@@ -180,6 +177,7 @@ function App() {
                     className="mirror-video"
                     autoPlay
                     playsInline
+                    muted
                 ></video>
                 <video
                     ref={videoFriend}
