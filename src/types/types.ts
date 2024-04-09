@@ -19,8 +19,6 @@ type OpenCameraProps = {
     videoMe: React.RefObject<HTMLVideoElement>;
     videoFriend: React.RefObject<HTMLVideoElement>;
     webcamStart: React.RefObject<HTMLElement>;
-    setLocalStream: (stream: MediaStream) => void;
-    setRemoteStream: (stream: MediaStream) => void;
     pc: RTCPeerConnection | null; // allow pc to be null
 };
 

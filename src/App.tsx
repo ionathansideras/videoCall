@@ -11,8 +11,6 @@ import useConnectToServer from "./hooks/useConnectToServer";
 function App() {
     // State variables for join code, peer connection, local and remote streams
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
-    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-    const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
     const [joinCode, setJoinCode] = useState("");
 
     // References to various HTML elements
@@ -33,8 +31,6 @@ function App() {
                 videoMe={videoMe}
                 videoFriend={videoFriend}
                 webcamStart={webcamStart}
-                setLocalStream={setLocalStream}
-                setRemoteStream={setRemoteStream}
                 pc={pc}
             />
             <CreateCall
