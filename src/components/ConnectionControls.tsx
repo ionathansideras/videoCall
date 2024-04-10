@@ -71,11 +71,11 @@ export default function ConnectionControls() {
                 onClick={() => muteVideo(localStream)}
             />
             {/* Switch camera icon, which switches between front and back cameras */}
-            <img
+            {/* <img
                 src={switchcamera}
                 alt="switch-camera"
                 onClick={handleChangeCamera}
-            />
+            /> */}
         </div>
     );
 }

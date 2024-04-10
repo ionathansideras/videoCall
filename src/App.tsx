@@ -13,8 +13,8 @@ import { VideoCallState } from "./types/types";
 
 function App() {
     // Get the peer connection from the Redux store
-    const openPopUp = useSelector(
-        (state: VideoCallState) => state.videoCall.openPopUp
+    const { openPopUp } = useSelector(
+        (state: VideoCallState) => state.videoCall
     );
 
     const videoMe = useRef(null);
