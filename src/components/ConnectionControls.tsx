@@ -3,24 +3,24 @@ import mic1 from "../assets/mic1.svg";
 import mic2 from "../assets/mic2.svg";
 import camera1 from "../assets/camera1.svg";
 import camera2 from "../assets/camera2.svg";
-// import switchcamera from "../assets/switch-camera.svg";
+import switchcamera from "../assets/switch-camera.svg";
 
 // Importing the useState hook from React
 import { useState } from "react";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { VideoCallState } from "../types/types";
 
-// import { setCameraSide } from "../redux/slices/videoCallSlice";
+import { setCameraSide } from "../redux/slices/videoCallSlice";
 
 // The ConnectionControls component
 export default function ConnectionControls() {
-    const { localStream } = useSelector(
+    const { localStream, cameraSide } = useSelector(
         (state: VideoCallState) => state.videoCall
     );
 
-    //const dispatch = useDispatch();
+    const dispatch = useDispatch();
     // State variables for whether the microphone and camera are muted
     const [mikeMuted, setMikeMuted] = useState(false);
     const [cameraMuted, setCameraMuted] = useState(false);
@@ -47,54 +47,14 @@ export default function ConnectionControls() {
         setCameraMuted(!cameraMuted);
     };
 
-    // const handleChangeCamera = () => {
-    //     if (cameraSide === "user") {
-    //         dispatch(setCameraSide("environment"));
-    //     } else {
-    //         dispatch(setCameraSide("user"));
-    //     }
-    // };
+    const handleChangeCamera = () => {
+        if (cameraSide === "user") {
+            dispatch(setCameraSide("environment"));
+        } else {
+            dispatch(setCameraSide("user"));
+        }
+    };
 
-    // async function switchCamera() {
-    //     let peerConnections: RTCPeerConnection[] = []; // Array to store all peer connections
-    //     // Get the user's media (video and audio)
-    //     let stream = await navigator.mediaDevices.getUserMedia({
-    //         video: {
-    //             facingMode: cameraSide, // Or 'environment'
-    //         },
-    //         audio: true,
-    //     });
-    //     // Stop the current video tracks
-    //     stream.getVideoTracks().forEach((track) => track.stop());
-
-    //     // Get the new video stream
-    //     const newStream = await navigator.mediaDevices.getUserMedia({
-    //         video: {
-    //             facingMode: cameraSide, // 'user' or 'environment'
-    //         },
-    //         audio: true,
-    //     });
-
-    //     // Get the new video track
-    //     const newVideoTrack = newStream.getVideoTracks()[0];
-
-    //     // Replace the video track in all peer connections
-    //     peerConnections.forEach((pc) => {
-    //         const oldTrack = pc
-    //             .getSenders()
-    //             .find((s) => s.track && s.track.kind === "video");
-    //         if (oldTrack) {
-    //             oldTrack.replaceTrack(newVideoTrack);
-    //         }
-    //     });
-
-    //     // Replace the video track in the local stream
-    //     stream = newStream;
-    // }
-
-    // useEffect(() => {
-    //     switchCamera();
-    // }, [cameraSide]);
     // The component's render method
     return (
         <div className="connection-controls">
@@ -111,11 +71,11 @@ export default function ConnectionControls() {
                 onClick={() => muteVideo(localStream)}
             />
             {/* Switch camera icon, which switches between front and back cameras */}
-            {/* <img
+            <img
                 src={switchcamera}
                 alt="switch-camera"
                 onClick={handleChangeCamera}
-            /> */}
+            />
         </div>
     );
 }
