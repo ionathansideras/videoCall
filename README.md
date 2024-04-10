@@ -17,6 +17,7 @@ Try it out now at [https://soloconvo.vercel.app/](https://soloconvo.vercel.app/)
 -   **[TypeScript](https://www.typescriptlang.org/)**: Elevate your coding with type-safe JavaScript for error-free development.
 -   **[Redux Toolkit](https://redux-toolkit.js.org/)**: Simplify app state management with this all-in-one toolkit.
 -   **[Firestore](https://firebase.google.com/products/firestore)**: Leverage a dynamic, scalable cloud database for seamless data flow.
+-   **[SCSS](https://sass-lang.com/)**: Style your application with more control and sophistication using SCSS, a preprocessor scripting language that is interpreted into CSS.
 -   **[WebRTC](https://webrtc.org/)**: Immerse in real-time communication without the need for complex installations.
 
 ## 🚀 Getting Started Is Easy!
