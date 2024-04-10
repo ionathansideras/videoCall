@@ -1,32 +1,21 @@
 import { RefObject } from "react";
-import { Dispatch, SetStateAction } from "react";
 import { MutableRefObject } from "react";
 
 type CreateCallProps = {
     createCall: RefObject<HTMLButtonElement>;
-    pc: RTCPeerConnection | null;
-    setJoinCode: Dispatch<SetStateAction<string>>;
     videoMe: MutableRefObject<HTMLVideoElement | null>;
     videoFriend: MutableRefObject<HTMLVideoElement | null>;
-    setOpenToast: Dispatch<SetStateAction<boolean>>;
-    setOpenPopUp: Dispatch<SetStateAction<boolean>>;
 };
 
 type JoinCallProps = {
     joinCall: React.RefObject<HTMLButtonElement>; // adjust this based on the actual element type
-    pc: RTCPeerConnection | null;
-    joinCode: string;
-    setJoinCode: (value: string) => void;
     videoMe: React.RefObject<HTMLVideoElement>;
     videoFriend: React.RefObject<HTMLVideoElement>;
-    setOpenPopUp: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 type StartCameraProps = {
     videoMe: RefObject<HTMLVideoElement>;
     videoFriend: RefObject<HTMLVideoElement>;
-    pc: RTCPeerConnection | null;
-    setLocalStream: (stream: MediaStream) => void;
 };
 
 type ConnectToServerProps = {
@@ -41,6 +30,26 @@ type ProjectionProps = {
 type ConnectionControlsProps = {
     localStream: MediaStream | null;
 };
+
+// Define a type for the slice state
+type VideoCallState = {
+    videoCall: {
+        pc: RTCPeerConnection | null;
+        joinCode: string;
+        localStream: MediaStream | null;
+        openPopUp: boolean;
+        cameraMicAccess: boolean;
+    };
+};
+
+type InitialStateType = {
+    pc: RTCPeerConnection | null;
+    joinCode: string;
+    localStream: MediaStream | null;
+    openPopUp: boolean;
+    cameraMicAccess: boolean;
+};
+
 export type {
     CreateCallProps,
     JoinCallProps,
@@ -48,4 +57,6 @@ export type {
     ProjectionProps,
     ConnectionControlsProps,
     StartCameraProps,
+    VideoCallState,
+    InitialStateType,
 };

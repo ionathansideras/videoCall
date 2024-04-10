@@ -1,5 +1,5 @@
 // Importing necessary hooks from React
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 // Importing the Projection component
 import Projection from "./components/Projection";
 import CreateCall from "./components/CreateCall";
@@ -7,66 +7,36 @@ import JoinCall from "./components/JoinCall";
 // Importing the useConnectToServer hook
 import useConnectToServer from "./hooks/useConnectToServer";
 import ConnectionControls from "./components/ConnectionControls";
-import { startCamera } from "./helpers/startCamera";
-import Snackbar from "@mui/material/Snackbar";
+import { useStartCamera } from "./hooks/useStartCamera";
+import { useSelector } from "react-redux";
+import { VideoCallState } from "./types/types";
 
 function App() {
-    // State variables for join code, peer connection, local and remote streams
-    const [pc, setPc] = useState<RTCPeerConnection | null>(null);
-    const [joinCode, setJoinCode] = useState("");
-    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-    const [openToast, setOpenToast] = useState(false);
-    const [openPopUp, setOpenPopUp] = useState(true);
+    // Get the peer connection from the Redux store
+    const openPopUp = useSelector(
+        (state: VideoCallState) => state.videoCall.openPopUp
+    );
+    console.log("openPopUp", openPopUp);
 
-    // References to various HTML elements
     const videoMe = useRef(null);
     const videoFriend = useRef(null);
-    const webcamStart = useRef(null);
+    //const webcamStart = useRef(null);
     const createCall = useRef<HTMLButtonElement>(null);
     const joinCall = useRef<HTMLButtonElement>(null);
-
     const popupRef = useRef<HTMLDivElement>(null);
     const coverRef = useRef<HTMLDivElement>(null);
 
     // Connect to the server
-    useConnectToServer({ setPc });
+    useConnectToServer();
 
     // Start the camera and set up the local and remote streams
-    useEffect(() => {
-        startCamera({
-            videoMe,
-            videoFriend,
-            pc,
-            setLocalStream,
-        });
-    }, [webcamStart, videoMe, videoFriend, pc]);
-
-    const handleClose = (
-        _event: React.SyntheticEvent | Event,
-        reason?: string
-    ) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setOpenToast(false);
-    };
+    useStartCamera({ videoMe, videoFriend });
 
     // Render the UI
     return (
         <main>
             <Projection videoMe={videoMe} videoFriend={videoFriend} />
-            <ConnectionControls localStream={localStream} />
-            <Snackbar
-                open={openToast}
-                autoHideDuration={7000}
-                onClose={handleClose}
-                message={`Call ID:  ${joinCode}`}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                ContentProps={{
-                    style: { backgroundColor: "white", color: "black" },
-                }}
-            />
+            <ConnectionControls />
             <span
                 className={`cover ${openPopUp ? "" : "hidden"}`}
                 ref={coverRef}
@@ -77,12 +47,8 @@ function App() {
             >
                 <CreateCall
                     createCall={createCall}
-                    pc={pc}
-                    setJoinCode={setJoinCode}
                     videoMe={videoMe}
                     videoFriend={videoFriend}
-                    setOpenToast={setOpenToast}
-                    setOpenPopUp={setOpenPopUp}
                 />
                 <div className="line">
                     <hr></hr>
@@ -91,11 +57,7 @@ function App() {
                 </div>
                 <JoinCall
                     joinCall={joinCall}
-                    setJoinCode={setJoinCode}
-                    pc={pc}
-                    joinCode={joinCode}
                     videoMe={videoMe}
-                    setOpenPopUp={setOpenPopUp}
                     videoFriend={videoFriend}
                 />
             </div>

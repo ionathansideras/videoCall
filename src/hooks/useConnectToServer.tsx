@@ -1,7 +1,10 @@
 import { useEffect } from "react";
-import { ConnectToServerProps } from "../types/types";
+import { useDispatch } from "react-redux";
+import { setPc } from "../redux/store";
 
-export default function useConnectToServer({ setPc }: ConnectToServerProps) {
+export default function useConnectToServer() {
+    const dispatch = useDispatch();
+
     useEffect(() => {
         // STUN server configuration
         const servers = {
@@ -17,6 +20,6 @@ export default function useConnectToServer({ setPc }: ConnectToServerProps) {
         };
 
         // On component mount, initialize the peer connection
-        setPc(new RTCPeerConnection(servers));
+        dispatch(setPc(new RTCPeerConnection(servers)));
     }, [setPc]);
 }
