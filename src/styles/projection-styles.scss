@@ -1,7 +1,9 @@
+@import "_variables.scss";
+
 .projection {
     display: flex;
     justify-content: center;
-    background-color: #36393e;
+    background-color: $theme_color;
 
     .mirror-video {
         transform: scaleX(-1);
