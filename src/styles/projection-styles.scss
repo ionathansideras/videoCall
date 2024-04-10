@@ -6,7 +6,7 @@
     background-color: $theme_color;
 
     .mirror-video {
-        //transform: scaleX(-1);
+        transform: scaleX(-1);
         height: 100vh;
         transition: width 0.5s;
     }
