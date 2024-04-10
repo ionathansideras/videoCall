@@ -39,7 +39,6 @@ type VideoCallState = {
         localStream: MediaStream | null;
         openPopUp: boolean;
         cameraMicAccess: boolean;
-        cameraSide: "user" | "environment";
     };
 };
 
@@ -49,7 +48,6 @@ type InitialStateType = {
     localStream: MediaStream | null;
     openPopUp: boolean;
     cameraMicAccess: boolean;
-    cameraSide: "user" | "environment";
 };
 
 export type {

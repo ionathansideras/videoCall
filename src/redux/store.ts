@@ -7,7 +7,6 @@ import {
     setLocalStream,
     setOpenPopUp,
     setCameraMicAccess,
-    setCameraSide,
 } from "./slices/videoCallSlice";
 
 const store = configureStore({
@@ -27,5 +26,4 @@ export {
     setLocalStream,
     setOpenPopUp,
     setCameraMicAccess,
-    setCameraSide,
 };
