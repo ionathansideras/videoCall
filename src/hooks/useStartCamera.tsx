@@ -20,10 +20,9 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
                     alert("This browser does not support facingMode!");
                 }
 
+                // Stop existing tracks if any
                 if (localStream) {
-                    localStream.getTracks().forEach((track) => {
-                        track.stop();
-                    });
+                    localStream.getTracks().forEach((track) => track.stop());
                 }
 
                 // Get the user's media (video and audio)
@@ -48,7 +47,6 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
                 });
 
                 // When a track is added to the peer connection, add it to the remote stream
-                // If you're in a call, update the peer connection's tracks
                 if (pc && pc.getSenders) {
                     pc.getSenders().forEach((sender) => {
                         if (sender.track && sender.track.kind === "video") {
