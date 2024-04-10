@@ -65,5 +65,5 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
         };
 
         startCamera();
-    }, [dispatch, pc, videoMe, videoFriend, cameraSide]);
+    }, [dispatch, pc, videoMe, videoFriend]);
 };
