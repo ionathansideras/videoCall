@@ -16,7 +16,6 @@ function App() {
     const openPopUp = useSelector(
         (state: VideoCallState) => state.videoCall.openPopUp
     );
-    console.log("openPopUp", openPopUp);
 
     const videoMe = useRef(null);
     const videoFriend = useRef(null);

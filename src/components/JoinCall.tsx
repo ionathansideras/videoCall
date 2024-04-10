@@ -34,7 +34,10 @@ export default function JoinCall({
     // Function to handle joining a call
     const handleJoinCall = async () => {
         // Check if PeerConnection and camera/microphone access are available
-        if (!pc || !cameraMicAccess) return;
+        if (!pc || !cameraMicAccess) {
+            errorToast("Allow camera and microphone access to join the call.");
+            return;
+        }
 
         // Check if join code is provided
         if (!joinCode) return;
