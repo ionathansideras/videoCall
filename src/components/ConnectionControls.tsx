@@ -3,24 +3,24 @@ import mic1 from "../assets/mic1.svg";
 import mic2 from "../assets/mic2.svg";
 import camera1 from "../assets/camera1.svg";
 import camera2 from "../assets/camera2.svg";
-import switchcamera from "../assets/switch-camera.svg";
+// import switchcamera from "../assets/switch-camera.svg";
 
 // Importing the useState hook from React
 import { useState } from "react";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { VideoCallState } from "../types/types";
 
-import { setCameraSide } from "../redux/slices/videoCallSlice";
+// import { setCameraSide } from "../redux/slices/videoCallSlice";
 
 // The ConnectionControls component
 export default function ConnectionControls() {
-    const { localStream, cameraSide } = useSelector(
+    const { localStream } = useSelector(
         (state: VideoCallState) => state.videoCall
     );
 
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     // State variables for whether the microphone and camera are muted
     const [mikeMuted, setMikeMuted] = useState(false);
     const [cameraMuted, setCameraMuted] = useState(false);
@@ -47,13 +47,13 @@ export default function ConnectionControls() {
         setCameraMuted(!cameraMuted);
     };
 
-    const handleChangeCamera = () => {
-        if (cameraSide === "user") {
-            dispatch(setCameraSide("environment"));
-        } else {
-            dispatch(setCameraSide("user"));
-        }
-    };
+    // const handleChangeCamera = () => {
+    //     if (cameraSide === "user") {
+    //         dispatch(setCameraSide("environment"));
+    //     } else {
+    //         dispatch(setCameraSide("user"));
+    //     }
+    // };
 
     // The component's render method
     return (
