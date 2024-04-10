@@ -7,7 +7,7 @@ import { VideoCallState } from "../types/types";
 // Custom hook to start the camera and set up the local and remote streams
 export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
     const dispatch = useDispatch();
-    const { pc, cameraSide, localStream } = useSelector(
+    const { pc, cameraSide } = useSelector(
         (state: VideoCallState) => state.videoCall
     );
 
@@ -18,11 +18,6 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
                     navigator.mediaDevices.getSupportedConstraints();
                 if (!supports["facingMode"]) {
                     alert("This browser does not support facingMode!");
-                }
-
-                // Stop existing tracks if any
-                if (localStream) {
-                    localStream.getTracks().forEach((track) => track.stop());
                 }
 
                 // Get the user's media (video and audio)
@@ -47,13 +42,12 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
                 });
 
                 // When a track is added to the peer connection, add it to the remote stream
-                if (pc && pc.getSenders) {
-                    pc.getSenders().forEach((sender) => {
-                        if (sender.track && sender.track.kind === "video") {
-                            const newTrack = stream.getVideoTracks()[0];
-                            sender.replaceTrack(newTrack);
-                        }
-                    });
+                if (pc) {
+                    pc.ontrack = (event) => {
+                        event.streams[0].getTracks().forEach((track) => {
+                            remote.addTrack(track);
+                        });
+                    };
                 }
 
                 // Set the source of the video elements to the local and remote streams
@@ -71,5 +65,5 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
         };
 
         startCamera();
-    }, [dispatch, pc, videoMe, videoFriend, cameraSide]);
+    }, [dispatch, pc, videoMe, videoFriend]);
 };
