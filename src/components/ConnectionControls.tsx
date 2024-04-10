@@ -56,7 +56,7 @@ export default function ConnectionControls() {
     };
 
     async function switchCamera() {
-        let peerConnections = []; // Array to store all peer connections
+        let peerConnections: RTCPeerConnection[] = []; // Array to store all peer connections
         // Get the user's media (video and audio)
         let stream = await navigator.mediaDevices.getUserMedia({
             video: {
@@ -82,7 +82,7 @@ export default function ConnectionControls() {
         peerConnections.forEach((pc) => {
             const oldTrack = pc
                 .getSenders()
-                .find((s) => s.track.kind === "video");
+                .find((s) => s.track && s.track.kind === "video");
             if (oldTrack) {
                 oldTrack.replaceTrack(newVideoTrack);
             }
