@@ -9,6 +9,7 @@ const initialState: InitialStateType = {
     localStream: null,
     openPopUp: true,
     cameraMicAccess: false,
+    cameraSide: "user",
 };
 
 export const videoCallSlice = createSlice({
@@ -30,6 +31,12 @@ export const videoCallSlice = createSlice({
         setCameraMicAccess: (state, action: PayloadAction<boolean>) => {
             state.cameraMicAccess = action.payload;
         },
+        setCameraSide: (
+            state,
+            action: PayloadAction<"user" | "environment">
+        ) => {
+            state.cameraSide = action.payload;
+        },
     },
 });
 
@@ -40,6 +47,7 @@ export const {
     setLocalStream,
     setOpenPopUp,
     setCameraMicAccess,
+    setCameraSide,
 } = videoCallSlice.actions;
 
 export default videoCallSlice.reducer;

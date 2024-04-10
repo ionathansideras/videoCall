@@ -7,14 +7,24 @@ import { VideoCallState } from "../types/types";
 // Custom hook to start the camera and set up the local and remote streams
 export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
     const dispatch = useDispatch();
-    const { pc } = useSelector((state: VideoCallState) => state.videoCall);
+    const { pc, cameraSide } = useSelector(
+        (state: VideoCallState) => state.videoCall
+    );
 
     useEffect(() => {
         const startCamera = async () => {
             try {
+                const supports =
+                    navigator.mediaDevices.getSupportedConstraints();
+                if (!supports["facingMode"]) {
+                    alert("This browser does not support facingMode!");
+                }
+
                 // Get the user's media (video and audio)
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
+                    video: {
+                        facingMode: cameraSide, // Or 'environment'
+                    },
                     audio: true,
                 });
 
@@ -55,5 +65,5 @@ export const useStartCamera = ({ videoMe, videoFriend }: StartCameraProps) => {
         };
 
         startCamera();
-    }, [dispatch, pc, videoMe, videoFriend]);
+    }, [dispatch, pc, videoMe, videoFriend, cameraSide]);
 };
