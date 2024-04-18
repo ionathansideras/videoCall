@@ -32,7 +32,8 @@ export default function JoinCall({
 
     const dispatch = useDispatch();
     // Function to handle joining a call
-    const handleJoinCall = async () => {
+    const handleJoinCall = async (e: React.FormEvent) => {
+        e.preventDefault();
         // Check if PeerConnection and camera/microphone access are available
         if (!pc || !cameraMicAccess) {
             errorToast("Allow camera and microphone access to join the call.");
@@ -121,7 +122,7 @@ export default function JoinCall({
 
     // Render the component
     return (
-        <div className="join">
+        <form className="join" onSubmit={handleJoinCall}>
             <h2>Join a call</h2>
             <input
                 type="text"
@@ -129,9 +130,7 @@ export default function JoinCall({
                 onChange={(e) => dispatch(setJoinCode(e.target.value))}
                 placeholder="Enter the call ID here"
             />
-            <button ref={joinCall} onClick={handleJoinCall}>
-                Join
-            </button>
-        </div>
+            <button ref={joinCall}>Join</button>
+        </form>
     );
 }
